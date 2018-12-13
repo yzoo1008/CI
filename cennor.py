@@ -155,7 +155,14 @@ for r in r_set :
                     if count:
                         count += 1
                         voting_table[alpha] = count
-                        trans_dict_temp.append([T_mtog, T_stog])
+                        num_check = False
+                        for i in range(0, len(trans_dict_temp)):
+                            if np.array_equal(trans_dict_temp[i], [T_mtog, T_stog]) :
+                                num_check = True
+                                break
+                        if not num_check :
+                            trans_dict_temp.append([T_mtog, T_stog])
+
                         transform_table[alpha] = trans_dict_temp
 
                     else:
