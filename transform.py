@@ -2,6 +2,22 @@ import numpy as np
 import math
 
 
+def R_x(x):
+	x = math.pi*x/180
+	return [[1, 0, 0],
+	       [0, np.cos(x), -np.sin(x)],
+	       [0, np.sin(x), np.cos(x)]]
+def R_y(y):
+	y = math.pi * y / 180
+	return [[np.cos(y), 0, np.sin(y)],
+	       [0, 1, 0],
+	       [-np.sin(y), 0, np.cos(y)]]
+def R_z(z):
+	z = math.pi * z / 180
+	return [[np.cos(z), -np.sin(z), 0],
+	       [np.sin(z), np.cos(z), 0],
+	       [0, 0, 1]]
+
 def transformation(mat1, mat2): #need to add translation now only rotation
 	# print(mat1[3:6], mat2[3:6], np.dot(mat1[3:6], mat2[3:6]))
 	cos = np.dot(mat1[3:6], mat2[3:6])
@@ -38,21 +54,13 @@ def merge(mat1, alpha, mat2):
 	T = np.matmul(mat1, T_stog)
 	return T
 
-def solution(a, b, c):
-	x = math.pi*a/180
-	y = math.pi*b/180
-	z = math.pi*c/180
-	R_x = [[1, 0, 0],
-	       [0, np.cos(x), -np.sin(x)],
-	       [0, np.sin(x), np.cos(x)]]
-	R_y = [[np.cos(y), 0, np.sin(y)],
-	       [0, 1, 0],
-	       [-np.sin(y), 0, np.cos(y)]]
-	R_z = [[np.cos(z), -np.sin(z), 0],
-	       [np.sin(z), np.cos(z), 0],
-	       [0, 0, 1]]
-	mat1 = np.matmul(R_z, R_y)
-	mat2 = np.matmul(mat1, R_x)
-	mat3 = np.matrix(mat2)
-	T = mat3.I
-	return mat3
+def solution():
+	R_1 = R_x(90)
+	R_2 = R_z(120)
+	R_3 = R_x(-15)
+	R_4 = R_y(-5)
+	t1 = np.matmul(R_4, R_3)
+	t2 = np.matmul(t1, R_2)
+	t3 = np.matmul(t2, R_1)
+	T = np.matrix(t3)
+	return T

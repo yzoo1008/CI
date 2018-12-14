@@ -9,6 +9,8 @@ import datetime
 def angle(v1, v2):
     inner_product = np.dot(v1, v2)
     size = np.linalg.norm(v1) * np.linalg.norm(v2)
+    if size == 0:
+        print(v1, v2)
     value = inner_product / size
     if value >= 1:
         return 0
@@ -53,7 +55,7 @@ print("Start Time: {}".format(datetime.datetime.now()))
 # 1.
 start_1 = time.time()
 
-np_array = read("./demo/pipe_deci")
+np_array = read("./demo/demo_model")
 shape = np.shape(np_array)
 
 print("Step 1: {:.3f}s".format(time.time() - start_1))
@@ -68,7 +70,6 @@ for r in range(0, shape[0]):
             dx = np_array[i, 0] - np_array[r, 0]
             dy = np_array[i, 1] - np_array[r, 1]
             dz = np_array[i, 2] - np_array[r, 2]
-            # print(np_array[r, 3:6], np_array[i, 3:6], angle(np_array[r, 3:6], np_array[i, 3:6]))
             d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
             a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*10)
             a2 = int(angle(np_array[i, 3:6], (-dx, -dy, -dz))*10)
@@ -93,18 +94,16 @@ tg_shape = np.shape(tg_np_array)
 voting_table = dict()
 transform_table = dict()
 r_set = set()
-#r = 4  # temporary value. should do change r repeatedly
-# print(tg_shape)
+
 random.seed(7)
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set)== 100:
+    if len(r_set)== 5:
         break
 print(r_set)
 
 num_miss = 0
 for r in r_set :
-    # print(r)
     for i in range(0, tg_shape[0]):
         if r != i:
             dx = tg_np_array[i, 0] - tg_np_array[r, 0]
@@ -133,14 +132,13 @@ for r in r_set :
                     alpha = cal_alpha(Svector_transformed) - cal_alpha(Mvector_transformed)
                     if alpha < 0 :
                         alpha = 2*math.pi + alpha
-                    alpha = int(alpha*1000.0)
+                    alpha = int(alpha*10000.0)
 
                     count = voting_table.get(alpha)
                     trans_dict_temp = transform_table.get(alpha)
 
                     p_tuple = [Mr[0:3], Sr[0:3]]
-                    # print(p_tuple)
-                    #
+
                     if count:
                         count += 1
                         voting_table[alpha] = count
@@ -157,8 +155,6 @@ for r in r_set :
                         voting_table[alpha] = 1
                         transform_table[alpha] = [[T_mtog, T_stog, p_tuple]]
             else:
-                # pass
-                # print("No item list. hash_key : ", hash_key)
                 num_miss += 1
 
 print("Miss: {}".format(num_miss))
@@ -172,7 +168,6 @@ winner = 0
 print("Numbers of keys : {}".format(len(voting_table.keys())))
 for key in voting_table.keys():
     temp = voting_table.get(key)
-    # print(key, temp)  #, transform_table.get(key)
     if vote_num < temp:
         winner = key
         vote_num = temp
@@ -188,14 +183,15 @@ print("Step 4: {:.3f}s".format(time.time() - start_4))
 start_5 = time.time()
 for number in range(np.shape(Transform_matrix_list)[0]):
     print(number)
-    T = transform.merge(transform_table.get(winner)[number][0], float(winner)/1000.0, transform_table.get(winner)[number][1])
+    T = transform.merge(transform_table.get(winner)[number][0], float(winner)/10000.0, transform_table.get(winner)[number][1])
     P = transform_table.get(winner)[number][2]
     print(P[0] - np.matmul(T, P[1]))
-    # Real_T = transform.solution(30, 45, 60)
-    print("Final Transform: ")
+    Real_T = transform.solution()
+    print("Our T Solution: ")
     print(T)
-    # print("Solution: ")
-    # print(Real_T)
-    # print(np.matmul(T, Real_T.I))
+    print("Real T Value: ")
+    print(Real_T)
+    print(np.matmul(T, Real_T.I))
 
 print("Step 5: {:.3f}s".format(time.time() - start_5))
+
