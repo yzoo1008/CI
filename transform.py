@@ -56,9 +56,9 @@ def merge(mat1, alpha, mat2):
 
 def solution():
 	R_1 = R_x(90)
-	R_2 = R_z(120)
-	R_3 = R_x(-15)
-	R_4 = R_y(-5)
+	R_2 = R_z(146)
+	R_3 = R_x(-19)
+	R_4 = R_y(-1)
 	t1 = np.matmul(R_4, R_3)
 	t2 = np.matmul(t1, R_2)
 	t3 = np.matmul(t2, R_1)

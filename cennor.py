@@ -104,7 +104,7 @@ voting_table = dict()
 transform_table = dict()
 r_set = set()
 
-random.seed(7)
+random.seed()
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
     if len(r_set)== 5:
