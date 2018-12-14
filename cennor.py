@@ -4,7 +4,8 @@ import math
 import transform
 import random
 import datetime
-
+import csv
+import os
 
 def angle(v1, v2):
     inner_product = np.dot(v1, v2)
@@ -64,29 +65,44 @@ print("Step 1: {:.3f}s".format(time.time() - start_1))
 # 2. Make point pair feature hash table
 start_2 = time.time()
 Hash_table = dict()
-for r in range(0, shape[0]):
-    #print(r)
-    for i in range(0, shape[0]):
-        if r != i:
-            dx = np_array[i, 0] - np_array[r, 0]
-            dy = np_array[i, 1] - np_array[r, 1]
-            dz = np_array[i, 2] - np_array[r, 2]
+if os.path.exists("./hashtable/demo_model.txt"):
+   with open("./hashtable/demo_model.txt") as f:
+       try :
+           for line in f:
+               print(line)
+       except :
+           print("No file but path exist.")
+else :
+    for r in range(0, shape[0]-800):
+        print(r)
+        for i in range(0, shape[0]):
+            if r != i:
+                dx = np_array[i, 0] - np_array[r, 0]
+                dy = np_array[i, 1] - np_array[r, 1]
+                dz = np_array[i, 2] - np_array[r, 2]
 
-            d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
-            a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*10)
-            a2 = int(angle(np_array[i, 3:6], (-dx, -dy, -dz))*10)
-            a3 = int(angle(np_array[r, 3:6], np_array[i, 3:6])*10)
+                d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
+                a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*10)
+                a2 = int(angle(np_array[i, 3:6], (-dx, -dy, -dz))*10)
+                a3 = int(angle(np_array[r, 3:6], np_array[i, 3:6])*10)
 
-            hash_key = d, a1, a2, a3
-            tmp = Hash_table.get(hash_key)
-            if tmp:
-                tmp.append([np_array[r], np_array[i]])
-                Hash_table[hash_key] = tmp
-            else:
-                Hash_table[hash_key] = [[np_array[r], np_array[i]]]
+                hash_key = d, a1, a2, a3
+                tmp = Hash_table.get(hash_key)
+                if tmp:
+                    tmp.append([np_array[r], np_array[i]])
+                    Hash_table[hash_key] = tmp
+                else:
+                    Hash_table[hash_key] = [[np_array[r], np_array[i]]]
+
+    w = open("./hashtable/demo_model.txt", "w")
+    print("now saving...")
+    #for key, val in Hash_table.items():
+    w.write(str(Hash_table))
+    w.close()
+
 print("Step 2: {:.3f}s".format(time.time() - start_2))
 
-
+exit(33)
 # 3. Find F(Mr, Mi) == F(Sr, Si) & Voting
 start_3 = time.time()
 
@@ -99,7 +115,7 @@ r_set = set()
 
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set) == 5:
+    if len(r_set) == 20:
         break
 print(r_set)
 
@@ -184,7 +200,7 @@ start_5 = time.time()
 real_count = -1
 mat_index = -1
 for number in range(np.shape(Transform_matrix_list)[0]):
-    if(real_count < transform_table.get(winner)[number][3]) :
+    if real_count < transform_table.get(winner)[number][3] :
         real_count = transform_table.get(winner)[number][3]
         mat_index = number
 #print("#### Number of different matrix : ", number+1)
