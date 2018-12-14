@@ -4,8 +4,6 @@ import math
 import transform
 import random
 import datetime
-import csv
-import os
 
 def angle(v1, v2):
     inner_product = np.dot(v1, v2)
@@ -65,44 +63,28 @@ print("Step 1: {:.3f}s".format(time.time() - start_1))
 # 2. Make point pair feature hash table
 start_2 = time.time()
 Hash_table = dict()
-if os.path.exists("./hashtable/demo_model.txt"):
-   with open("./hashtable/demo_model.txt") as f:
-       try :
-           for line in f:
-               print(line)
-       except :
-           print("No file but path exist.")
-else :
-    for r in range(0, shape[0]-800):
-        print(r)
-        for i in range(0, shape[0]):
-            if r != i:
-                dx = np_array[i, 0] - np_array[r, 0]
-                dy = np_array[i, 1] - np_array[r, 1]
-                dz = np_array[i, 2] - np_array[r, 2]
+for r in range(0, shape[0]-800):
+    print(r)
+    for i in range(0, shape[0]):
+        if r != i:
+            dx = np_array[i, 0] - np_array[r, 0]
+            dy = np_array[i, 1] - np_array[r, 1]
+            dz = np_array[i, 2] - np_array[r, 2]
 
-                d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
-                a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*10)
-                a2 = int(angle(np_array[i, 3:6], (-dx, -dy, -dz))*10)
-                a3 = int(angle(np_array[r, 3:6], np_array[i, 3:6])*10)
+            d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
+            a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*10)
+            a2 = int(angle(np_array[i, 3:6], (-dx, -dy, -dz))*10)
+            a3 = int(angle(np_array[r, 3:6], np_array[i, 3:6])*10)
 
-                hash_key = d, a1, a2, a3
-                tmp = Hash_table.get(hash_key)
-                if tmp:
-                    tmp.append([np_array[r], np_array[i]])
-                    Hash_table[hash_key] = tmp
-                else:
-                    Hash_table[hash_key] = [[np_array[r], np_array[i]]]
-
-    w = open("./hashtable/demo_model.txt", "w")
-    print("now saving...")
-    #for key, val in Hash_table.items():
-    w.write(str(Hash_table))
-    w.close()
-
+            hash_key = d, a1, a2, a3
+            tmp = Hash_table.get(hash_key)
+            if tmp:
+                tmp.append([np_array[r], np_array[i]])
+                Hash_table[hash_key] = tmp
+            else:
+                Hash_table[hash_key] = [[np_array[r], np_array[i]]]
 print("Step 2: {:.3f}s".format(time.time() - start_2))
 
-exit(33)
 # 3. Find F(Mr, Mi) == F(Sr, Si) & Voting
 start_3 = time.time()
 
