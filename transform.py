@@ -65,3 +65,32 @@ def solution():
 	T = np.matrix(t3)
 	return T
 
+
+def Cal_Error2(M1, M2):
+	max1 = -1
+	for i in range(3):
+		diff = M1[i] - M2[i]
+		if max1 < abs(diff):
+			max1 = abs(diff)
+	max2 = -1
+	for i in range(3):
+		if max2 < abs(M2[i]):
+			max2 = abs(M2[i])
+	return max1/max2
+
+
+def Cal_Error3(M1, M2):
+	M1 = np.array(M1)
+	M2 = np.array(M2)
+	max1 = -1
+	for i in range(3):
+		for j in range(3):
+			diff = M1[i, j] - M2[i, j]
+			if max1 < abs(diff):
+				max1 = abs(diff)
+	max2 = -1
+	for i in range(3):
+		for j in range(3):
+			if max2 < abs(M2[i, j]):
+				max2 = abs(M2[i, j])
+	return max1/max2

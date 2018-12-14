@@ -54,6 +54,7 @@ def read(filename):
     f.close()
     return np.array(array)
 
+
 print("Start Time: {}".format(datetime.datetime.now()))
 
 # 1.
@@ -67,8 +68,8 @@ print("Step 1: {:.3f}s".format(time.time() - start_1))
 # 2. Make point pair feature hash table
 start_2 = time.time()
 Hash_table = dict()
-for r in range(0, shape[0]-800):
-    print(r)
+for r in range(0, shape[0]):
+    # print(r)
     for i in range(0, shape[0]):
         if r != i:
             dx = np_array[i, 0] - np_array[r, 0]
@@ -99,12 +100,12 @@ voting_table = dict()
 transform_table = dict()
 r_set = set()
 
+random.seed(7)
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set) == 20:
+    if len(r_set) == 5:
         break
-print(r_set)
-
+# print(r_set)
 
 num_miss = 0
 for r in r_set :
@@ -161,7 +162,7 @@ for r in r_set :
             else:
                 num_miss += 1
 
-print("Miss: {}".format(num_miss))
+# print("Miss: {}".format(num_miss))
 print("Step 3: {:.3f}s".format(time.time() - start_3))
 
 # 4. Find Winner
@@ -177,7 +178,7 @@ for key in voting_table.keys():
 print("Winner is : {} with {}".format(winner/10000.0, vote_num))
 Transform_matrix_list = transform_table.get(winner)
 #print("Transform matrix as a tuple : {}".format(Transform_matrix_list))
-print("Shape of Transform matrix: {}".format(np.shape(Transform_matrix_list)))
+# print("Shape of Transform matrix: {}".format(np.shape(Transform_matrix_list)))
 
 print("Step 4: {:.3f}s".format(time.time() - start_4))
 
@@ -192,16 +193,22 @@ for number in range(np.shape(Transform_matrix_list)[0]):
 #print("#### Number of different matrix : ", number+1)
 T = transform.merge(transform_table.get(winner)[mat_index][0], float(winner)/10000.0, transform_table.get(winner)[mat_index][1])
 P = transform_table.get(winner)[mat_index][2]
-Pos = P[0] - np.matmul(T, P[1])
-print(P[0] - np.matmul(T, P[1]))
-print("Actual counted is : ", real_count)
-Real_T = transform.solution()
-print("Our T Solution: ")
+Pos = np.array(P[0] - np.matmul(T, P[1]))[0]
+print("Our Translate Result: ")
+print(Pos)
+# print("Actual counted is : ", real_count)
+print("Our Rotate Result: ")
 print(T)
-print("Real T Value: ")
+
+Real_T = transform.solution()
+print("Real Rotate Result: ")
 print(Real_T)
-print("this should be identity matrix")
+print("This should be Identity Matrix")
 print(np.matmul(T, Real_T.I))
+
+print("Translate Error: {}%".format(transform.Cal_Error2(Pos, [-21.2, -44.2, 56])*100))
+R_error = transform.Cal_Error3(T, Real_T)*100
+print("Rotate Error: {}%".format(R_error))
 
 print("Step 5: {:.3f}s".format(time.time() - start_5))
 
