@@ -34,13 +34,6 @@ def cal_alpha(v):
             theta = 2*math.pi - theta
     return theta
 
-def rotating_mat(a, b, c):
-    rx = [[1,0,0], [0, np.cos(a), (-1)*np.sin(a)], [0, np.sin(a), np.cos(a)]]
-    ry = [[np.cos(b), 0, np.sin(b)], [0, 1, 0], [(-1)*np.sin(b), 0, np.cos(b)]]
-    rz = [[np.cos(c), (-1)*np.sin(c), 0], [np.sin(c), np.cos(c), 0], [0, 0, 1]]
-    rm_temp = np.matmul(rz, ry)
-    return np.matmul(rm_temp, rx)
-
 def read(filename):
     f = open(filename, 'r')  # Model
     array = []
@@ -72,7 +65,7 @@ print("Step 1: {:.3f}s".format(time.time() - start_1))
 start_2 = time.time()
 Hash_table = dict()
 for r in range(0, shape[0]):
-    # print(r)
+    #print(r)
     for i in range(0, shape[0]):
         if r != i:
             dx = np_array[i, 0] - np_array[r, 0]
@@ -104,10 +97,10 @@ voting_table = dict()
 transform_table = dict()
 r_set = set()
 
-random.seed(7)
+#random.seed(7)
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set)== 5:
+    if len(r_set) == 5:
         break
 print(r_set)
 
@@ -140,10 +133,6 @@ for r in r_set :
                     Mvector_transformed = np.matmul(T_mtog, Mvector)
                     Svector_transformed = np.matmul(T_stog, Svector)
 
-                    #print("----------------------")
-                    #print(np.matmul(T_mtog, Mr[3:6]))
-                    #print(np.matmul(T_stog, Sr[3:6]))
-
                     alpha = cal_alpha(Svector_transformed) - cal_alpha(Mvector_transformed)
                     if alpha < 0 :
                         alpha = 2*math.pi + alpha
@@ -151,9 +140,7 @@ for r in r_set :
 
                     count = voting_table.get(alpha)
                     trans_dict_temp = transform_table.get(alpha)
-
                     p_tuple = [Mr[0:3], Sr[0:3]]
-
                     if count:
                         count += 1
                         voting_table[alpha] = count
@@ -161,14 +148,15 @@ for r in r_set :
                         for index in range(0, len(trans_dict_temp)):
                             # if np.sum(np.abs(np.array(trans_dict_temp[index]) - np.array([T_mtog, T_stog]))) < (1.0/1000.0):
                             if np.array_equal(trans_dict_temp[index][0:2], [T_mtog, T_stog]):
+                                trans_dict_temp[index][3] += 1
                                 num_check = True
                                 break
                         if not num_check :
-                            trans_dict_temp.append([T_mtog, T_stog, p_tuple])
+                            trans_dict_temp.append([T_mtog, T_stog, p_tuple, 1])
                         transform_table[alpha] = trans_dict_temp
                     else:
                         voting_table[alpha] = 1
-                        transform_table[alpha] = [[T_mtog, T_stog, p_tuple]]
+                        transform_table[alpha] = [[T_mtog, T_stog, p_tuple, 1]]
             else:
                 num_miss += 1
 
@@ -187,35 +175,30 @@ for key in voting_table.keys():
         vote_num = temp
 print("Winner is : {} with {}".format(winner/10000.0, vote_num))
 Transform_matrix_list = transform_table.get(winner)
-print("Transform matrix as a tuple : {}".format(Transform_matrix_list))
+#print("Transform matrix as a tuple : {}".format(Transform_matrix_list))
 print("Shape of Transform matrix: {}".format(np.shape(Transform_matrix_list)))
 
 print("Step 4: {:.3f}s".format(time.time() - start_4))
 
 # 5. Choose Solution
 start_5 = time.time()
+real_count = -1
+mat_index = -1
 for number in range(np.shape(Transform_matrix_list)[0]):
-    print("# of different matrix : ", number+1)
-    T = transform.merge(transform_table.get(winner)[number][0], float(winner)/10000.0, transform_table.get(winner)[number][1])
-    P = transform_table.get(winner)[number][2]
-    print(P[0] - np.matmul(T, P[1]))
-    Real_T = transform.solution()
-    print("Our T Solution: ")
-    print(T)
-    print("Real T Value: ")
-    print(Real_T)
-    print(np.matmul(T, Real_T.I))
+    if(real_count < transform_table.get(winner)[number][3]) :
+        real_count = transform_table.get(winner)[number][3]
+        mat_index = number
+#print("#### Number of different matrix : ", number+1)
+T = transform.merge(transform_table.get(winner)[mat_index][0], float(winner)/10000.0, transform_table.get(winner)[mat_index][1])
+P = transform_table.get(winner)[mat_index][2]
+print(P[0] - np.matmul(T, P[1]))
+print("Actual counted is : ", real_count)
+Real_T = transform.solution()
+print("Our T Solution: ")
+print(T)
+print("Real T Value: ")
+print(Real_T)
+print("this should identity matrix")
+print(np.matmul(T, Real_T.I))
 
 print("Step 5: {:.3f}s".format(time.time() - start_5))
-
-'''
-transform_mats = transform_table.get(winner)
-sudo_rotating = rotating_mat(30*math.pi/180, 45*math.pi/180, 60*math.pi/180)
-print("30, 45, 60 rotating matrix is : \n", sudo_rotating)
-Rx_alpha = [[1,0,0],[0,np.cos(winner/1000.0), (-1)*np.sin(winner/1000.0)], [0,np.sin(winner/1000.0), np.cos(winner/1000.0)]]
-for i in range(0, len(transform_mats)):
-    Rotation_mat_temp = np.matmul(np.linalg.inv(transform_mats[i][0]), np.linalg.inv(Rx_alpha))
-    Rotation_mat = np.matmul(Rotation_mat_temp, transform_mats[i][1])
-    print("rotation matrix[", i, "] is : \n", Rotation_mat)
-    print("this should be identity : \n", np.matmul(sudo_rotating, np.linalg.inv(Rotation_mat)))
-'''
