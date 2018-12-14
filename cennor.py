@@ -200,7 +200,7 @@ print("Our T Solution: ")
 print(T)
 print("Real T Value: ")
 print(Real_T)
-print("this should identity matrix")
+print("this should be identity matrix")
 print(np.matmul(T, Real_T.I))
 
 print("Step 5: {:.3f}s".format(time.time() - start_5))
