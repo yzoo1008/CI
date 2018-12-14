@@ -2,8 +2,12 @@ import numpy as np
 import time
 import math
 import transform
+import module
 import random
 import datetime
+
+Model_path = "./demo/demo_model"
+Scene_path = "./demo/scene_deci"
 
 def angle(v1, v2):
     inner_product = np.dot(v1, v2)
@@ -55,7 +59,7 @@ print("Start Time: {}".format(datetime.datetime.now()))
 # 1.
 start_1 = time.time()
 
-np_array = read("./demo/demo_model")
+np_array = read(Model_path)
 shape = np.shape(np_array)
 
 print("Step 1: {:.3f}s".format(time.time() - start_1))
@@ -88,7 +92,7 @@ print("Step 2: {:.3f}s".format(time.time() - start_2))
 # 3. Find F(Mr, Mi) == F(Sr, Si) & Voting
 start_3 = time.time()
 
-tg_np_array = read("./demo/scene_deci")
+tg_np_array = read(Scene_path)
 tg_shape = np.shape(tg_np_array)
 
 voting_table = dict()
@@ -188,6 +192,7 @@ for number in range(np.shape(Transform_matrix_list)[0]):
 #print("#### Number of different matrix : ", number+1)
 T = transform.merge(transform_table.get(winner)[mat_index][0], float(winner)/10000.0, transform_table.get(winner)[mat_index][1])
 P = transform_table.get(winner)[mat_index][2]
+Pos = P[0] - np.matmul(T, P[1])
 print(P[0] - np.matmul(T, P[1]))
 print("Actual counted is : ", real_count)
 Real_T = transform.solution()
@@ -199,3 +204,18 @@ print("this should identity matrix")
 print(np.matmul(T, Real_T.I))
 
 print("Step 5: {:.3f}s".format(time.time() - start_5))
+
+
+# 6. Read & Transform Scene
+start_6 = time.time()
+NV, Node = module.read()
+
+for num in range(np.shape(Node)[0]):
+    NV[num] = np.matmul(T, NV[num]) + Pos
+    for xyz in range(np.shape(Node)[1]):
+        Node[num][xyz] = np.matmul(T, Node[num][xyz]) + Pos
+
+module.transform(NV, Node)
+
+print("Step 6: {:.3f}s".format(time.time() - start_6))
+
