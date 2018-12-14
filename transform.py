@@ -21,7 +21,7 @@ def transformation(mat1, mat2): #need to add translation now only rotation
 	y = v[1]
 	z = v[2]
 
-	trans = [[cos + (x**2 * (1-cos)), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin],
-	         [x*y*(1-cos) + z*sin, cos + y**2*(1-cos), y*z*(1-cos) - x*sin],
-	         [x*z*(1-cos) - y*sin, y*z*(1-cos) + x*sin, cos + z**2*(1-cos)]]
+	trans = [[round(cos + (x**2 * (1-cos)), 4), round(x*y*(1-cos) - z*sin, 4), round(x*z*(1-cos) + y*sin, 4)],
+	         [round(x*y*(1-cos) + z*sin, 4), round(cos + y**2*(1-cos), 4), round(y*z*(1-cos) - x*sin, 4)],
+	         [round(x*z*(1-cos) - y*sin, 4), round(y*z*(1-cos) + x*sin, 4), round(cos + z**2*(1-cos), 4)]]
 	return trans
