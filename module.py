@@ -1,7 +1,7 @@
 import numpy as np
 
 def read():
-	size = 349
+	size = 1000
 	cnt = 0
 	v_cnt = 0
 	nv = np.zeros((size, 3), dtype='f8')
@@ -24,24 +24,24 @@ def read():
 			v_cnt += 1
 	f.close()
 
-	return nv, node
+	return nv[0:cnt], node[0:cnt]
 
 def transform(nv, node):
-	f = open("./scene_deci_trans.stl", 'w')
-	data = "solid STL "
+	f = open("./result.stl", 'w')
+	data = "solid\n"
 	f.write(data)
 	for num in range(np.shape(nv)[0]):
-		data = " facet normal"
+		data = "facet normal\n"
 		for xyz in range(3):
-			data += " " + str(nv[num][xyz]) + " "
-		data += " outer loop"
+			data += "" + str(nv[num][xyz]) + "\n"
+		data += "outer loop\n"
 		for i in range(np.shape(nv)[1]):
-			data += " vertex"
+			data += "vertex\n"
 			for xyz in range(3):
-				data += " " + str(node[num][i][xyz]) + " "
-		data += " endloop"
-		data += " endfacet"
+				data += "" + str(node[num][i][xyz]) + "\n"
+		data += "endloop\n"
+		data += "endfacet\n"
 		f.write(data)
-	data = "endsolid vcg"
+	data = "endsolid vcg\n"
 	f.write(data)
 	f.close()
