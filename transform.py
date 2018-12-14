@@ -42,16 +42,14 @@ def transformation(mat1, mat2): #need to add translation now only rotation
 	return trans
 
 def merge(mat1, alpha, mat2):
-	T_mtog = np.matrix(mat1)
-	T_stog = np.matrix(mat2)
-	T_mtog_I = T_mtog.I
+	#T_mtog = np.matrix(mat1)
+	#T_mtog_I = T_mtog.I
 	T_alpha = [[1, 0, 0],
 	           [0, np.cos(-alpha), -np.sin(-alpha)],
 	           [0, np.sin(-alpha), np.cos(-alpha)]]
-	# T_alpha_I = np.matrix(T_alpha).I
 
-	mat1 = np.matmul(T_mtog_I, T_alpha)
-	T = np.matmul(mat1, T_stog)
+	matrix = np.matmul(np.linalg.inv(mat1), T_alpha)
+	T = np.matmul(matrix, mat2)
 	return T
 
 def solution():
@@ -61,36 +59,6 @@ def solution():
 	R_4 = R_y(-1)
 	t1 = np.matmul(R_4, R_3)
 	t2 = np.matmul(t1, R_2)
-	t3 = np.matmul(t2, R_1)
-	T = np.matrix(t3)
+	T = np.matmul(t2, R_1)
 	return T
 
-
-def Cal_Error2(M1, M2):
-	max1 = -1
-	for i in range(3):
-		diff = M1[i] - M2[i]
-		if max1 < abs(diff):
-			max1 = abs(diff)
-	max2 = -1
-	for i in range(3):
-		if max2 < abs(M2[i]):
-			max2 = abs(M2[i])
-	return max1/max2
-
-
-def Cal_Error3(M1, M2):
-	M1 = np.array(M1)
-	M2 = np.array(M2)
-	max1 = -1
-	for i in range(3):
-		for j in range(3):
-			diff = M1[i, j] - M2[i, j]
-			if max1 < abs(diff):
-				max1 = abs(diff)
-	max2 = -1
-	for i in range(3):
-		for j in range(3):
-			if max2 < abs(M2[i, j]):
-				max2 = abs(M2[i, j])
-	return max1/max2
