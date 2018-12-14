@@ -32,6 +32,12 @@ def cal_alpha(v):
             theta = 2*math.pi - theta
     return theta
 
+def rotating_mat(a, b, c):
+    rx = [[1,0,0], [0, np.cos(a), (-1)*np.sin(a)], [0, np.sin(a), np.cos(a)]]
+    ry = [[np.cos(b), 0, np.sin(b)], [0, 1, 0], [(-1)*np.sin(b), 0, np.cos(b)]]
+    rz = [[np.cos(c), (-1)*np.sin(c), 0], [np.sin(c), np.cos(c), 0], [0, 0, 1]]
+    rm_temp = np.matmul(rz, ry)
+    return np.matmul(rm_temp, rx)
 # 1.
 start_1 = time.time()
 f = open("./data/ds_model", 'r') #Model
@@ -66,11 +72,12 @@ for r in range(0, shape[0]):
             dy = np_array[i, 1] - np_array[r, 1]
             dz = np_array[i, 2] - np_array[r, 2]
             # print(np_array[r, 3:6], np_array[i, 3:6], angle(np_array[r, 3:6], np_array[i, 3:6]))
-            d = round(math.sqrt((dx*dx) + (dy*dy) + (dz*dz)), 4)
-            a1 = round(angle((dx, dy, dz), np_array[r, 3:6]), 2)
-            a2 = round(angle((-dx, -dy, -dz), np_array[i, 3:6]), 2)
-            a3 = round(angle(np_array[r, 3:6], np_array[i, 3:6]), 2)
+            d = int(math.sqrt((dx*dx) + (dy*dy) + (dz*dz))*10)
+            a1 = int(angle((dx, dy, dz), np_array[r, 3:6])*1000)
+            a2 = int(angle((-dx, -dy, -dz), np_array[i, 3:6])*1000)
+            a3 = int(angle(np_array[r, 3:6], np_array[i, 3:6])*1000)
 
+            #hash_key = str(d)+str(a1)+str(a2)+str(a3)
             hash_key = d, a1, a2, a3
             tmp = Hash_table.get(hash_key)
             if tmp:
@@ -106,21 +113,21 @@ r_set = set()
 #r = 4  # temporary value. should do change r repeatedly
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set)==5 :
+    if len(r_set)==10 :
         break
 
 print(r_set)
-
+print("tg_shape number is : ", tg_shape[0])
 for r in r_set :
     for i in range(0,tg_shape[0]):
         if r != i:
             dx = tg_np_array[i, 0] - tg_np_array[r, 0]
             dy = tg_np_array[i, 1] - tg_np_array[r, 1]
             dz = tg_np_array[i, 2] - tg_np_array[r, 2]
-            d = round(math.sqrt((dx * dx) + (dy * dy) + (dz * dz)), 4)
-            a1 = round(angle((dx, dy, dz), tg_np_array[r, 3:6]), 2)
-            a2 = round(angle((-dx, -dy, -dz), tg_np_array[i, 3:6]), 2)
-            a3 = round(angle(tg_np_array[r, 3:6], tg_np_array[i, 3:6]), 2)
+            d = int(math.sqrt((dx * dx) + (dy * dy) + (dz * dz))*10)
+            a1 = int(angle((dx, dy, dz), tg_np_array[r, 3:6])*1000)
+            a2 = int(angle((-dx, -dy, -dz), tg_np_array[i, 3:6])*1000)
+            a3 = int(angle(tg_np_array[r, 3:6], tg_np_array[i, 3:6])*1000)
             # for key in Hash_table.keys():
             #     print(key)
             hash_key = d, a1, a2, a3
@@ -142,11 +149,15 @@ for r in r_set :
                     Mvector_transformed = np.matmul(T_mtog, Mvector)
                     Svector_transformed = np.matmul(T_stog, Svector)
 
+                    #print("----------------------")
+                    #print(np.matmul(T_mtog, Mr[3:6]))
+                    #print(np.matmul(T_stog, Sr[3:6]))
+
                     alpha = cal_alpha(Svector_transformed) - cal_alpha(Mvector_transformed)
                     if alpha < 0 :
                         alpha = 2*math.pi + alpha
 
-                    alpha = round(alpha, 3)
+                    alpha = int(alpha*1000)
                     #print("alph value is ", alpha)
                     #print("S alpha is ", cal_alpha(Svector_transformed), "M alpha is ", cal_alpha(Mvector_transformed))
                     #alpha = round(angle(vector1, vector2_trans)*180/PI, 0) # cannot make 0~2pi
@@ -156,8 +167,8 @@ for r in r_set :
                         count += 1
                         voting_table[alpha] = count
                         num_check = False
-                        for i in range(0, len(trans_dict_temp)):
-                            if np.array_equal(trans_dict_temp[i], [T_mtog, T_stog]) :
+                        for index in range(0, len(trans_dict_temp)):
+                            if np.array_equal(trans_dict_temp[index], [T_mtog, T_stog]) :
                                 num_check = True
                                 break
                         if not num_check :
@@ -167,10 +178,11 @@ for r in r_set :
 
                     else:
                         voting_table[alpha] = 1
-                        transform_table[alpha] = [T_mtog, T_stog]
+                        transform_table[alpha] = [[T_mtog, T_stog]]
 
             else:
                 print("No item list. hash_key : ", hash_key)
+
 
 
 print("Step 3: {:.3f}s".format(time.time() - start_3))
@@ -186,6 +198,15 @@ for key in voting_table.keys():
         winner = key
         vote_num = temp
 
-print("winner is :", winner)
+print("winner is :", winner/1000.0)
 print("transform matrix as a tuple : ", transform_table.get(winner))
 
+transform_mats = transform_table.get(winner)
+sudo_rotating = rotating_mat(30*math.pi/180, 45*math.pi/180, 60*math.pi/180)
+print("30, 45, 60 rotating matrix is : \n", sudo_rotating)
+Rx_alpha = [[1,0,0],[0,np.cos(winner/1000.0), (-1)*np.sin(winner/1000.0)], [0,np.sin(winner/1000.0), np.cos(winner/1000.0)]]
+for i in range(0, len(transform_mats)):
+    Rotation_mat_temp = np.matmul(np.linalg.inv(transform_mats[i][0]), np.linalg.inv(Rx_alpha))
+    Rotation_mat = np.matmul(Rotation_mat_temp, transform_mats[i][1])
+    print("rotation matrix[", i, "] is : \n", Rotation_mat)
+    print("this should be identity : \n", np.matmul(sudo_rotating, np.linalg.inv(Rotation_mat)))
