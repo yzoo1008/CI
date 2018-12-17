@@ -1,8 +1,14 @@
 # 창의적 통합설계
-=> ./de
+## ./demo: Demo를 위한 자료 파일  
+처음 잇몸의 면의 갯수가 250000개 정도 되서 다 돌리기에는 많은 수행시간이 요구될 것이라 예상되므로 decimation을 진행하여 1200개 정도까지 면의 갯수를 줄였습니다.  
+- ./demo/model.stl: Model(잇몸 + 지주대)를 decimation 시킨 파일  
+- ./demo/scene.stl: Scene(기준 지주대, 원점에 존재)를 decimation 시킨 파일  
+- ./demo/result.stl: 최종변환행렬을 구하여 Scene에 적용시킨 파일, 결과 파일  
+- ./demo/model_cn: Cennor.py에서 model을 읽기 위해서는 model.stl파일이 면의 중점과 면 벡터 튜플로 이루어진 구조여야한다. 이를 위해 MathLab을 이용하여 전처리 해 놓은 파일, 실제로 Cennor.py에서는 이 파일을 읽음.  
+- ./demo/scene_cn: model_cn과 마찬가지로 scene에 대해 똑같이 적용해놓은 파일.  
 
 ## Cennor.py
- - Main 문
+./demo 폴더에 있는 자료를 읽어들여 transform matrix를 구하는 python script.
 ### Step 1.
  - Model 읽기  
 ### Step 2.
@@ -25,3 +31,7 @@
  
 ## transform.py
  - 변환 관련 함수들 모아놓은 Script
+
+## 결론
+ - 여러 물체들 속에서 동일한 메쉬 구조를 가지는 어떤 한 물체를 찾는 작업은 100% 확률로 찾을 수 있다.
+ - 하지만, 메쉬구조가 달라지게 된다면 부정확한 결과를 나타내게 된다.
