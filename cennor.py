@@ -6,8 +6,11 @@ import module
 import random
 import datetime
 
-Model_path = "./demo/demo_model"
-Scene_path = "./demo/scene_deci"
+Model_path = "./demo/model_cn"
+Scene_path = "./demo/scene_cn"
+result_path = "./demo/scene.stl"
+save_path = "./demo/result.stl"
+
 
 def angle(v1, v2):
     inner_product = np.dot(v1, v2)
@@ -62,13 +65,13 @@ start_1 = time.time()
 np_array = read(Model_path)
 shape = np.shape(np_array)
 
-print("Step 1: {:.3f}s".format(time.time() - start_1))
+print("Step 1: {:.3f}s : Read Model file".format(time.time() - start_1))
 
 # 2. Make point pair feature hash table
 start_2 = time.time()
 Hash_table = dict()
 for r in range(0, shape[0]):
-    print(r)
+    # print(r)
     for i in range(0, shape[0]):
         if r != i:
             dx = np_array[i, 0] - np_array[r, 0]
@@ -87,7 +90,7 @@ for r in range(0, shape[0]):
                 Hash_table[hash_key] = tmp
             else:
                 Hash_table[hash_key] = [[np_array[r], np_array[i]]]
-print("Step 2: {:.3f}s".format(time.time() - start_2))
+print("Step 2: {:.3f}s : Generate PPF of Model".format(time.time() - start_2))
 
 # 3. Find F(Mr, Mi) == F(Sr, Si) & Voting
 start_3 = time.time()
@@ -101,7 +104,7 @@ r_set = set()
 
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set) == 5:
+    if len(r_set) == 3:
         break
 print(r_set)
 
@@ -160,8 +163,8 @@ for r in r_set :
             else:
                 num_miss += 1
 
-print("Miss: {}".format(num_miss))
-print("Step 3: {:.3f}s".format(time.time() - start_3))
+#print("Miss: {}".format(num_miss))
+print("Step 3: {:.3f}s : Calculate alpha value & voting".format(time.time() - start_3))
 
 # 4. Find Winner
 start_4 = time.time()
@@ -178,7 +181,7 @@ Transform_matrix_list = transform_table.get(winner)
 #print("Transform matrix as a tuple : {}".format(Transform_matrix_list))
 print("Shape of Transform matrix: {}".format(np.shape(Transform_matrix_list)))
 
-print("Step 4: {:.3f}s".format(time.time() - start_4))
+print("Step 4: {:.3f}s : Make Transform matrix".format(time.time() - start_4))
 
 # 5. Choose Solution
 start_5 = time.time()
@@ -192,22 +195,24 @@ for number in range(np.shape(Transform_matrix_list)[0]):
 T = transform.merge(transform_table.get(winner)[mat_index][0], float(winner)/10000.0, transform_table.get(winner)[mat_index][1])
 P = transform_table.get(winner)[mat_index][2]
 Pos = P[0] - np.matmul(T, P[1])
+print("-------------------- Result ---------------------")
+print("Our Translate Solution: ")
 print(P[0] - np.matmul(T, P[1]))
-print("Actual counted is : ", real_count)
+#print("Actual counted is : ", real_count)
 Real_T = transform.solution()
-print("Our T Solution: ")
+print("Our Rotate Solution: ")
 print(T)
-print("Real T Value: ")
+print("Real Rotate Value: ")
 print(Real_T)
 print("this should identity matrix")
 print(np.matmul(T, np.linalg.inv(Real_T)))
 
-print("Step 5: {:.3f}s".format(time.time() - start_5))
+# print("Step 5: {:.3f}s".format(time.time() - start_5))
 
 
 # 6. Read & Transform Scene
 start_6 = time.time()
-NV, Node = module.read()
+NV, Node = module.read(result_path)
 
 for num in range(np.shape(Node)[0]):
     NV[num] = np.matmul(T, NV[num]) + Pos
@@ -216,4 +221,4 @@ for num in range(np.shape(Node)[0]):
 
 module.transform(NV, Node)
 
-print("Step 6: {:.3f}s".format(time.time() - start_6))
+print("Step 5: {:.3f}s : Save Output to {}".format(time.time() - start_6, save_path))

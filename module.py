@@ -1,12 +1,12 @@
 import numpy as np
 
-def read():
+def read(path):
 	size = 1000
 	cnt = 0
 	v_cnt = 0
 	nv = np.zeros((size, 3), dtype='f8')
 	node = np.zeros((size, 3, 3), dtype='f8')
-	f = open("./scene_deci.stl", 'r')
+	f = open(path, 'r')
 	while True:
 		line = f.readline()
 		if not line:
@@ -27,7 +27,7 @@ def read():
 	return nv[0:cnt], node[0:cnt]
 
 def transform(nv, node):
-	f = open("./result.stl", 'w')
+	f = open("./demo/result.stl", 'w')
 	data = "solid\n"
 	f.write(data)
 	for num in range(np.shape(nv)[0]):
