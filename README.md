@@ -1,4 +1,5 @@
-# CI
+# 창의적 통합설계
+=> ./de
 
 ## Cennor.py
  - Main 문
