@@ -38,5 +38,5 @@
 
 
 ## 예제들
-![Example1](./image/Example1.jpeg)
+![Example1](./image/Example1.JPG)
 
