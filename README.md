@@ -38,5 +38,6 @@
 
 
 ## 예제들
+1. 잇몸에서 지주대 찾기 (빨간색 line이 result 파일)  
 ![Example1](./image/Example1.JPG)
 
