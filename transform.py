@@ -62,3 +62,10 @@ def solution():
 	T = np.matmul(t2, R_1)
 	return T
 
+	# R_1 = R_x(20)
+	# R_2 = R_y(40)
+	# R_3 = R_z(60)
+	# t1 = np.matmul(R_3, R_2)
+	# T = np.matmul(t1, R_1)
+	# return T
+	#

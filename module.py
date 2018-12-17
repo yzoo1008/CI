@@ -26,8 +26,8 @@ def read(path):
 
 	return nv[0:cnt], node[0:cnt]
 
-def transform(nv, node):
-	f = open("./demo/result.stl", 'w')
+def transform(nv, node, save_path):
+	f = open(save_path, 'w')
 	data = "solid\n"
 	f.write(data)
 	for num in range(np.shape(nv)[0]):

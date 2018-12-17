@@ -8,8 +8,12 @@ import datetime
 
 Model_path = "./demo/model_cn"
 Scene_path = "./demo/scene_cn"
-result_path = "./demo/scene.stl"
+read_path = "./demo/scene.stl"
 save_path = "./demo/result.stl"
+# Model_path = "./example/TV_Mount_Transformed_cn"
+# Scene_path = "./example/TV_Mount_cn"
+# read_path = "./example/TV_Mount.stl"
+# save_path = "./example/TV_Mount_result.stl"
 
 
 def angle(v1, v2):
@@ -104,7 +108,7 @@ r_set = set()
 
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set) == 3:
+    if len(r_set) == 50:
         break
 print(r_set)
 
@@ -212,13 +216,13 @@ print(np.matmul(T, np.linalg.inv(Real_T)))
 
 # 6. Read & Transform Scene
 start_6 = time.time()
-NV, Node = module.read(result_path)
+NV, Node = module.read(read_path)
 
 for num in range(np.shape(Node)[0]):
     NV[num] = np.matmul(T, NV[num]) + Pos
     for xyz in range(np.shape(Node)[1]):
         Node[num][xyz] = np.matmul(T, Node[num][xyz]) + Pos
 
-module.transform(NV, Node)
+module.transform(NV, Node, save_path)
 
 print("Step 5: {:.3f}s : Save Output to {}".format(time.time() - start_6, save_path))
