@@ -53,19 +53,19 @@ def merge(mat1, alpha, mat2):
 	return T
 
 def solution():
-	R_1 = R_x(90)
-	R_2 = R_z(146)
-	R_3 = R_x(-19)
-	R_4 = R_y(-1)
-	t1 = np.matmul(R_4, R_3)
-	t2 = np.matmul(t1, R_2)
-	T = np.matmul(t2, R_1)
-	return T
+#	R_1 = R_x(90)
+#	R_2 = R_z(146)
+#	R_3 = R_x(-19)
+#	R_4 = R_y(-1)
+#	t1 = np.matmul(R_4, R_3)
+#	t2 = np.matmul(t1, R_2)
+#	T = np.matmul(t2, R_1)
+#	return T
 
-	# R_1 = R_x(20)
-	# R_2 = R_y(40)
-	# R_3 = R_z(60)
-	# t1 = np.matmul(R_3, R_2)
-	# T = np.matmul(t1, R_1)
-	# return T
+	R_1 = R_x(10)
+	R_2 = R_y(20)
+	R_3 = R_z(30)
+	t1 = np.matmul(R_3, R_2)
+	T = np.matmul(t1, R_1)
+	return T
 	#

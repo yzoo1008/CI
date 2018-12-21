@@ -6,14 +6,14 @@ import module
 import random
 import datetime
 
-Model_path = "./demo/model_cn"
-Scene_path = "./demo/scene_cn"
-read_path = "./demo/scene.stl"
-save_path = "./demo/result.stl"
-# Model_path = "./example/TV_Mount_Transformed_cn"
-# Scene_path = "./example/TV_Mount_cn"
-# read_path = "./example/TV_Mount.stl"
-# save_path = "./example/TV_Mount_result.stl"
+# Model_path = "./demo/model_cn"
+# Scene_path = "./demo/scene_cn"
+# read_path = "./demo/scene.stl"
+# save_path = "./demo/result.stl"
+Model_path = "./example/Starship_cn"
+Scene_path = "./example/Engine_cn"
+read_path = "./example/Engine.stl"
+save_path = "./example/Engine_result.stl"
 
 
 def angle(v1, v2):
@@ -21,6 +21,7 @@ def angle(v1, v2):
     size = np.linalg.norm(v1) * np.linalg.norm(v2)
     if size == 0:
         print(v1, v2)
+        size = 10000
     value = inner_product / size
     if value >= 1:
         return 0
@@ -108,7 +109,7 @@ r_set = set()
 
 while True :
     r_set.add(random.randrange(0, tg_shape[0]))  # make r_set
-    if len(r_set) == 50:
+    if len(r_set) == 3:
         break
 print(r_set)
 
